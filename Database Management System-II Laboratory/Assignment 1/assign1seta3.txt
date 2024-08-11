@@ -1,0 +1,111 @@
+                                                                                  ASSIGNMENT 1 SETA 3
+ 
+                                                                                       Creation 
+1. create table book(bno int primary key,bname varchar(20),pubname varchar(10) not null,bprice float);
+2. create table author(ano int primary key,aname varchar(20),qualification varchar(15),addr varchar(15));
+3. create table b_a(bno int references book,ano int references author);
+
+                                                                                       Insertion
+                                                                                                           
+Book Table:-
+insert into book values(1,'shyamchi aai','nirali pub',300.00);
+insert into book values(2,'agnipankh','niyati pub',400.00);
+insert into book values(3,'gitanjali','jagrutipub',400.00);
+insert into book values(4,'blue','nirali pub',500.00);
+insert into book values(5,'liliput','jagrutipub',700.00);
+
+Author Table:-
+insert into author values(101,'sane guruji','graduate','ratnagiri');
+insert into author values(102,'apj kalam','phd','kochi');
+insert into author values(103,'rk narayan','masters','nashik');
+
+Book_author Table:-
+insert into b_a values(1,101);
+insert into b_a values(2,102);
+insert into b_a values(3,101);
+insert into b_a values(4,102);
+insert into b_a values(5,103);
+
+                                                                                           Queries
+                                                                                                                     
+1.  select book.bno,bname from book,author,b_a
+where book.bno=b_a.bno and
+author.ano=b_a.ano and aname='sane guruji';
+ bno |    bname
+-----+--------------
+   1 | shyamchi aai
+   3 | gitanjali
+
+2. select count(bno) from book where pubname='nirali pub';
+ count
+-------
+     2
+
+3. select * from book where
+bprice between 400 and 600;
+ bno |   bname   |  pubname   | bprice
+-----+-----------+------------+--------
+   2 | agnipankh | niyati pub |    400
+   3 | gitanjali | jagrutipub |    400
+   4 | blue      | nirali pub |    500
+
+4. select ano,aname from author
+ order by aname;
+ ano |    aname
+-----+-------------
+ 102 | apj kalam
+ 103 | rk narayan
+ 101 | sane guruji
+
+5.  update book
+set pubname='jagrutipub'
+where pubname='niyati pub';
+UPDATE 1
+
+6.  select * from book
+where bname like 's%';
+ bno |    bname     |  pubname   | bprice
+-----+--------------+------------+--------
+   1 | shyamchi aai | nirali pub |    300
+
+7.  select aname,bname from book,author,b_a
+where book.bno=b_a.bno and
+author.ano=b_a.ano
+group by aname,bname;
+    aname    |    bname
+-------------+--------------
+ sane guruji | shyamchi aai
+ apj kalam   | blue
+ sane guruji | gitanjali
+ apj kalam   | agnipankh
+ rk narayan  | liliput
+
+8.  select * from author where
+ano in(select b_a.ano from book,author,b_a
+where book.bno=b_a.bno and
+author.ano=b_a.ano
+group by b_a.ano
+having count(*)>=2);
+ ano |    aname    | qualification |   addr
+-----+-------------+---------------+-----------
+ 101 | sane guruji | graduate      | ratnagiri
+ 102 | apj kalam   | phd           | kochi
+
+9. select book.bno,bname,author.ano,aname from book,author,b_a
+where book.bno=b_a.bno and
+author.ano=b_a.ano and
+addr='nashik';
+ bno |  bname  | ano |   aname
+-----+---------+-----+------------
+   5 | liliput | 103 | rk narayan
+
+10. select *from author where
+ano in (select b_a.ano from book b
+join b_a on b.bno = b_a.bno
+join author a on a.ano = b_a.ano
+group by b_a.ano
+order by count(b_a.bno) desc
+limit 1);
+ ano |    aname    | qualification |   addr
+-----+-------------+---------------+-----------
+ 101 | sane guruji | graduate      | ratnagiri

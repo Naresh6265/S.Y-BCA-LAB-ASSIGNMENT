@@ -1,0 +1,55 @@
+                                                                           ASSIGNMENT 2 SETC 1
+
+                                                                               Creation
+
+1. create table dept(deptno varchar(20) primary key,dept_name char(20));
+2. create table salesman(sno int primary key,s_name varchar(30) not null,start_year int,deptno varchar(20) references dept on delete cascade);
+3. create table trip(tno int primary key,from_city char(20),to_city char(20),departure_date date,return_date date,sno int references salesman on delete cascade);
+4. create table expense(eid int primary key,amount money,tno int references trip on delete cascade);
+                                                                               insertion 
+Deparment Table:-
+INSERT INTO Dept VALUES('D001', 'Sales'),
+('D002', 'Marketing'),
+('D003', 'Finance');
+
+Salesman Table:-
+INSERT INTO Salesman (sno, s_name, start_year, deptno) VALUES(1, 'Mr.Pawar', 2018, 'D001'),
+(2, 'Mr.Kale', 2019,'D001'),
+(3, 'Ms.Joshi', 2020, 'D002'),
+(4, 'Mr.Sharma', 2017, 'D003');
+
+Trip Table:-
+INSERT INTO Trip (tno, from_city, to_city, departure_date, return_date, sno) VALUES(101, 'Pune', 'Mumbai', '2023-06-10', '2023-06-12', 1),
+(102, 'Mumbai', 'Delhi', '2023-07-15', '2023-07-18', 1),
+(103, 'Pune', 'Mumbai', '2023-06-20', '2023-06-22', 2),
+(104, 'Pune', 'Mumbai', '2023-06-25', '2023-06-27', 2),
+(105, 'Bangalore', 'Chennai', '2023-08-05', '2023-08-07', 3);
+
+Expense Table:-
+INSERT INTO Expense (eid, amount, tno) VALUES(1001, 5000, 101),(1002, 15000, 102),
+(1003, 6000, 103),
+(1004, 5500, 104),
+(1005, 8000, 105);
+
+                                                                           Queries
+
+1. create view a2c1v1 as select s.s_name,sum(e.amount) as total_expenses from expense e,salesman s,trip t where s.sno=t.sno and t.tno=e.tno and s.s_name='Mr.Pawar' group by s.s_name;
+CREATE VIEW
+se2217=# select * from a2c1v1;
+  s_name  | total_expenses
+----------+----------------
+ Mr.Pawar |     $20,000.00
+
+2. create view a2c1v2 as select d.dept_name from dept d, salesman s where d.deptno = s.deptno and s.sno not in(select distinct t.sno from trip t);
+CREATE VIEW
+se2217=# select * from a2c1v2;
+      dept_name
+----------------------
+ Finance
+
+3. create view a2c1v3 as select s.s_name, count(*) as trip_count from salesman s, trip t where s.sno = t.sno and s.s_name = 'Mr.Kale' and t.from_city = 'Pune' and t.to_city = 'Mumbai' and extract(month from t.departure_date) = 6 group by s.s_name;
+CREATE VIEW
+se2217=# select * from a2c1v3;
+ s_name  | trip_count
+---------+------------
+ Mr.Kale |          2 

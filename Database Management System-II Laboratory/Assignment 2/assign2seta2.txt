@@ -1,0 +1,55 @@
+                                                                           ASSIGNMENT 2 SETA 2
+
+                                                                               Creation
+
+1. create table area(aname varchar(20) primary key,area_type varchar(5) check(area_type in('urban','rural')));
+2. create table person(pno int primary key,pname varchar(20),birthdate date,income numeric(6),aname varchar(20) references area);
+
+                                                                               insertion 
+Area Table:-
+insert into area values('pune','urban'),
+('nashik','rural'),
+('moshi','urban'),
+('bhosari','rural');
+
+Person Table:-
+insert into person values(1,'dinesh','2003-06-24',16969,'moshi'),
+(2,'suresh','2004-08-25',15000,'pune'),
+(3,'ganesh','2005-02-13',16000,'nashik'),
+(4,'ramesh','2002-04-18',21000,'bhosari'),
+(5,'kalpesh','2002-04-18',21000,'bhosari'),
+(6,'vishal_tupe','2002-04-18',21000,'bhosari');
+
+                                                                           Queries
+                                                                           
+1. create view a2a2v1 as select pname from person where pname like '%tupe%' AND aname = 'bhosari';
+CREATE VIEW
+se2217=# select * from a2a2v1;
+    pname    
+-------------
+ vishal_tupe
+ 
+2. create view a2a2v2 as select count(*) as count from person where aname in (select aname from area where area_type = 'rural') and income > '10000';
+CREATE VIEW
+se2217=# select * from a2a2v2;
+ count 
+-------
+     4
+ 
+3. create view a2a2v3 as select a.aname, count(p.pno) as count from area a, person p where a.aname = p.aname and extract(year from age(p.birthdate)) > 21 group by a.aname;
+CREATE VIEW
+se2217=# select * from a2a2v3;                                                                                                                          aname  | count 
+---------+-------
+ bhosari |     3
+    
+4.  create view a2a2v4 as select a.aname, p.pname, p.income from area a, person p where a.aname = p.aname and p.income = (select max(income) from person where aname = a.aname) order by a.aname;
+CREATE VIEW
+se2217=# select * from a2a2v4;
+  aname  |    pname    | income 
+---------+-------------+--------
+ bhosari | ramesh      |  21000
+ bhosari | kalpesh     |  21000
+ bhosari | vishal_tupe |  21000
+ moshi   | dinesh      |  16969
+ nashik  | ganesh      |  16000
+ pune    | suresh      |  15000

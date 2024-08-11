@@ -1,0 +1,75 @@
+                                                                                Creation
+                                                    
+create table area(aname varchar(20) primary key,area_type varchar(5) check(area_type in('urban','rural')));
+create table person(pno int primary key,pname varchar(20),birthdate date,income numeric(6),aname varchar(20) references area);
+
+                                                                                Insertion 
+                                                    
+insert into area values('pune','urban'),('nashik','rural'),('moshi','urban'),('bhosari','rural');
+insert into person values(1,'dinesh','2003-06-24',16969,'moshi');
+insert into person values(2,'suresh','2004-08-25',15000,'pune');
+insert into person values(3,'ganesh','2005-02-13',16000,'nashik');
+insert into person values(4,'ramesh','2002-04-18',21000,'bhosari');
+insert into person values(5,'kalpesh','2002-04-18',21000,'bhosari');
+ 
+                                                                                Queries
+                                                                                                                                           
+1. select pname from person,area where person.aname=area.aname and area.aname='pune';
+ pname
+--------
+ suresh
+
+2. select * from person where pname like 'd%';
+ pno | pname  | birthdate  | income | aname
+-----+--------+------------+--------+-------
+   1 | dinesh | 2003-06-24 |  16969 | moshi
+
+3. select count(pno) from person,area where person.aname=area.aname and income>10000 group by area.aname;
+ count
+-------
+     1
+     1
+     1
+     1
+
+4. select pname from person where income between 5000 and 20000;
+ pname
+--------
+ dinesh
+ suresh
+ ganesh
+
+5. select pname from person where extract(month from birthdate)='08';
+ pname
+--------
+ suresh
+
+6. select pname,income from person where income in(select income from person group by income having count(*)>1) order by income,pname;
+  pname  | income
+---------+--------
+ kalpesh |  21000
+ ramesh  |  21000
+
+7. select area.aname,max(income) from area,person where area.aname=person.aname group by area.aname;
+  aname  |  max
+---------+-------
+ moshi   | 16969
+ nashik  | 16000
+ pune    | 15000
+ bhosari | 21000
+
+8. update person set income=(income*1.10) where aname in(select aname from area where area_type='rural');
+UPDATE 3
+
+9. delete from person where income<10000;
+DELETE 0
+
+10. select * from person order by pname desc;
+ pno |  pname  | birthdate  | income |  aname
+-----+---------+------------+--------+---------
+   2 | suresh  | 2004-08-25 |  15000 | pune
+   4 | ramesh  | 2002-04-18 |  23100 | bhosari
+   5 | kalpesh | 2002-04-18 |  23100 | bhosari
+   3 | ganesh  | 2005-02-13 |  17600 | nashik
+   1 | dinesh  | 2003-06-24 |  16969 | moshi
+

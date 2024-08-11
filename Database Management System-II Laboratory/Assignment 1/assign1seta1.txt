@@ -1,0 +1,88 @@
+                                                                                Creation
+
+1. create table student(sno int primary key,sname varchar(20),sclass varchar(10) not null,saddr varchar(30));
+2. create table teacher(tno int primary key,tname varchar(20),qualification varchar(15),experience int);
+3. create table stud_teach(sno int references student,tno int references teacher,subject varchar(20));
+
+                                                                                Insertion
+
+Student Table:
+insert into student values(1,'Avinash','FYBCA','Bhosari'),
+(2,'Suresh','TYBCA','Cidco'),
+(3,'Dinesh','SYBCA','Kothrud'),
+(4,'Harry','FYBCA','Chakan'),
+(5,'Johnny','SYBCA','Kothrud');
+
+Teacher Table:
+insert into teacher values(101,'Tushar Sir','B.Ed',14),
+(102,'Twinkle Mam','Ph.D',16),
+(103,'Amol Sir','M.tech',13),
+(104,'Ruchi Mam','Ph.D',24),
+(105,'Rahul Sir','B.Tech',20);
+
+Student_teacher Table:
+insert into stud_teach values(1,101,'Soft Skills'),
+(2,102,'Data Structure'),
+(3,103,'DBMS'),
+(4,104,'HTML'),
+(5,105,'Java');
+
+                                                                                Queries
+
+1.  select tname from teacher,student,stud_teach where teacher.tno=stud_teach.tno and student.sno=stud_teach.sno and sname='Avinash';
+   tname
+------------
+ Tushar Sir
+
+2.  select sname from teacher,student,stud_teach where teacher.tno=stud_teach.tno and student.sno=stud_teach.sno and tname='Amol Sir';
+ sname
+--------
+ Dinesh
+
+3. select * from teacher where tname like'T%';
+ tno |    tname    | qualification | experience
+-----+-------------+---------------+------------
+ 101 | Tushar Sir  | B.Ed          |         14
+ 102 | Twinkle Mam | Ph.D          |         16
+
+4. select tname from teacher,stud_teach where teacher.tno=stud_teach.tno and subject='DBMS';
+  tname
+----------
+ Amol Sir
+
+5. select count(*) from teacher where qualification='Ph.D';
+ count
+-------
+     2
+
+6. select count(*) from student where saddr='Cidco';
+ count
+-------
+     1
+
+7.  select * from teacher order by experience desc limit 1;
+ tno |   tname   | qualification | experience
+-----+-----------+---------------+------------
+ 104 | Ruchi Mam | Ph.D          |         24
+
+8.  select sname from student where sclass='SYBCA' and saddr='Kothrud';
+ sname
+--------
+ Dinesh
+ Johnny
+
+9.  select sname from student where sname like'______';
+ sname
+--------
+ Suresh
+ Dinesh
+ Johnny
+
+10. select teacher.tname,stud_teach.subject,count(stud_teach.sno) as total_students from teacher,stud_teach where teacher.tno=stud_teach.tno group by teacher.tname,stud_teach.subject;
+    tname    |    subject     | total_students
+-------------+----------------+----------------
+ Twinkle Mam | Data Structure |              1
+ Ruchi Mam   | HTML           |              1
+ Rahul Sir   | Java           |              1
+ Amol Sir    | DBMS           |              1
+ Tushar Sir  | Soft Skills    |              1

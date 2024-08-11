@@ -1,0 +1,44 @@
+                                                                           ASSIGNMENT 1 SETC 2
+
+                                                                               Creation
+
+1. CREATE TABLE BUS (bus_no INT PRIMARY KEY,capacity INT NOT NULL,depot_name VARCHAR(20));
+2. CREATE TABLE ROUTE (route_no INT PRIMARY KEY,source CHAR(20),destination CHAR(20),no_of_stations INT);
+3. CREATE TABLE DRIVER (driver_no INT PRIMARY KEY,driver_name CHAR(20),license_no INT UNIQUE,address CHAR(20),d_age INT,salary FLOAT);
+4. CREATE TABLE BUS_ROUTE (bus_no INT REFERENCES BUS,route_no INT REFERENCES ROUTE);
+5. CREATE TABLE BUS_DRIVER (bus_no INT REFERENCES BUS,driver_no INT REFERENCES DRIVER,date_of_duty_allotted DATE,shift INT CHECK(shift in (1,2)));
+
+                                                                               insertion 
+Bus Table:-
+INSERT INTO BUS (bus_no, capacity, depot_name) VALUES
+(1, 20, 'Central Depot'),
+(2, 30, 'North Depot'),
+(3, 15, 'Central Depot');
+
+Route Table:-
+INSERT INTO ROUTE (route_no, source, destination, no_of_stations) VALUES
+(1, 'A', 'B', 5),
+(2, 'C', 'D', 3);
+
+Driver Table:-
+INSERT INTO DRIVER (driver_no, driver_name, license_no, address, d_age, salary)VALUES
+(1, 'Jagdish', 1001, 'Nagpur', 45, 5000),
+(2, 'Janardhan', 1002, 'Akola', 35, 4500),
+(3, 'Manav', 1003, 'Nashik', 50, 5500);
+
+Bus_route Table:-
+INSERT INTO BUS_ROUTE (bus_no, route_no) VALUES
+(1, 1),
+(2, 1),
+(3, 2);
+
+Bus_driver Table :-
+INSERT INTO BUS_DRIVER (bus_no, driver_no, date_of_duty_allotted, shift) VALUES
+(1, 1, '2020-06-15', 1),
+(1, 1, '2020-06-15', 2),
+(2, 2, '2020-06-16', 2),
+(2, 3, '2020-06-17', 1),
+(2, 3, '2020-06-17', 2);
+
+                                                                           Queries
+

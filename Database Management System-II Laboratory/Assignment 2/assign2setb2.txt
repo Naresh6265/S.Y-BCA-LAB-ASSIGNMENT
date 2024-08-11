@@ -1,0 +1,72 @@
+                                                                           ASSIGNMENT 2 SETB 2
+
+                                                                               Creation
+
+1. create table branch(bid int primary key, brname char(30), brcity char(10));
+2. create table customer(cno int primary key, cname char(20), caddr char(35), city char(20));
+3. create table l_a(lno int primary key, l_a_require money, l_a_approved money, l_date date); 
+4. create table bcl_ternary(bid int references branch, cno int references customer, lno int references l_a);
+
+                                                                               insertion 
+Branch Table:-
+insert into branch values(1, 'Nagar', 'Nagar'),
+(2, 'Karve Nagar','Pune'),
+(3,'ShivajiNagar','Pune'),
+(4, 'PCMC', 'Pune');
+
+Customer Table:-
+insert into customer values(101, 'Patil', 'Bharatmata chouk', 'Moshi'),
+(102, 'Kale', 'Pipe line road', 'Nagar'),(103, 'Kate', 'Pradhikaran', 'Nigdi'),
+(104, 'Shilimkar', 'Nana peth', 'Pune'),(105, 'Pandey', 'Shivaji Nagar', 'Pune'),
+(106, 'Dhere', 'Sadashiv Peth', 'Pune'),(107, 'Dhore', 'Karve Nagar', 'Pune');
+
+Loan_application Table:-
+insert into l_a values(1001, 50000, 35000, now()),(1002, 500000, 350000, '2020-07-25')
+,(1003, 200000, 100000, '2024-04-09'),(1004, 1000000, 3500000, '2020-02-02'),
+(1005, 300000, 120000, '2019-08-08'),(1006, 200000, 120000, '2019-07-01'),
+(1007, 70000, 30000, '2018-06-01');
+
+Ternary Table:-
+insert into bcl_ternary values(1, 102, 1007),(2, 107, 1006),
+(2,104,1005),(3, 105, 1004),(3, 106, 1003),
+(4, 103, 1002),(4, 101, 1001);
+
+                                                                           Queries
+
+1. create view a2b2v1 as select c.*, l.l_a_require, l.l_a_approved from customer c, l_a l, bcl_ternary t where c.c
+no = t.cno and l.lno = t.lno and l.l_a_approved < l.l_a_require;
+CREATE VIEW
+se2217=# select * from a2b2v1;
+ cno |        cname         |                caddr                |         city         | l_a_require | l_a_approved
+-----+----------------------+-------------------------------------+----------------------+-------------+--------------
+ 102 | Kale                 | Pipe line road                      | Nagar                |  $70,000.00 |   $30,000.00
+ 107 | Dhore                | Karve Nagar                         | Pune                 | $200,000.00 |  $120,000.00
+ 104 | Shilimkar            | Nana peth                           | Pune                 | $300,000.00 |  $120,000.00
+ 106 | Dhere                | Sadashiv Peth                       | Pune                 | $200,000.00 |  $100,000.00
+ 103 | Kate                 | Pradhikaran                         | Nigdi                | $500,000.00 |  $350,000.00
+ 101 | Patil                | Bharatmata chouk                    | Moshi                |  $50,000.00 |   $35,000.00
+
+2. create view a2b2v2 as select b.bid, b.brname, sum(l.l_a_approved) as total_approved from branch b, l_a l, bcl_ternary t where b.bid = t.bid and l.lno = t.lno and l.l_date between '2019-06-01' and '2020-06-01' group by b.bid, b.brname;
+CREATE VIEW
+se2217=# select * from a2b2v2;
+ bid |             brname             | total_approved
+-----+--------------------------------+----------------
+   2 | Karve Nagar                    |    $240,000.00
+   3 | ShivajiNagar                   |  $3,500,000.00
+
+3. create view a2b2v3 as select b.bid, b.brname, count(distinct c.cno) as high_loan_customers from branch b, customer c, l_a l, bcl_ternary t where b.bid = t.bid and c.cno = t.cno and l.lno = t.lno and l.l_a_require > '300000' group b
+y b.bid, b.brname;
+CREATE VIEW
+se2217=# select * from a2b2v3;
+ bid |             brname             | high_loan_customers
+-----+--------------------------------+---------------------
+   3 | ShivajiNagar                   |                   1
+   4 | PCMC                           |                   1
+ 
+4. create view a2b2v4 as select b.bid, b.brname, c.cname from branch b, customer c, l_a l, bcl_ternary t where b.bid = t.bid and c.cno = t.cno and l.lno = t.lno and l.l_a_require < '100000' order by b.bid, c.cname;
+CREATE VIEW
+se2217=# select * from a2b2v4;
+ bid |             brname             |        cname
+-----+--------------------------------+----------------------
+   1 | Nagar                          | Kale
+   4 | PCMC                           | Patil

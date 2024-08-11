@@ -1,0 +1,91 @@
+                                                                           ASSIGNMENT 2 SETC 2
+
+                                                                               Creation
+
+1. CREATE TABLE Cities (city CHAR(20), state CHAR(20), PRIMARY KEY (city));
+2. CREATE TABLE Warehouses (wid INTEGER PRIMARY KEY, wname CHAR(30) NOT NULL, location CHAR(20), city CHAR(20) REFERENCES Cities);
+3. CREATE TABLE Stores (sid INTEGER PRIMARY KEY, store_name CHAR(20), location_city CHAR(20), wid INTEGER REFERENCES Warehouses);
+4. CREATE TABLE Items (itemno INTEGER PRIMARY KEY, description TEXT, weight DECIMAL(5,2), cost DECIMAL(5,2));
+5. CREATE TABLE Customers (cno INTEGER PRIMARY KEY, cname CHAR(50), addr VARCHAR(50), cu_city CHAR(20));
+6. CREATE TABLE Orders (ono INTEGER PRIMARY KEY, odate DATE, cno INTEGER REFERENCES Customers ON DELETE CASCADE);
+7. CREATE TABLE Items_Orders (itemno INTEGER REFERENCES Items, ono INTEGER REFERENCES Orders, ordered_quantity INTEGER);
+8. CREATE TABLE Stores_Items (sid INTEGER REFERENCES Stores, itemno INTEGER REFERENCES Items, quantity INTEGER);
+
+                                                                               insertion 
+City Table:-
+INSERT INTO Cities (city, state) VALUES('Nagar', 'Maharashtra'),('Pune', 'Maharashtra');
+
+Warehouse Table:-
+INSERT INTO Warehouses (wid, wname, location, city) VALUES
+(1, 'Central Warehouse', 'Main Road', 'Nagar'),
+(2, 'Spare Parts', 'Industrial Area', 'Pune');
+
+Store Table:-
+INSERT INTO Stores (sid, store_name, location_city, wid) VALUES
+(1, 'Auto Parts Store', 'Nagar', 1),
+(2, 'Electronics Store', 'Pune', 2),
+(3, 'Grocery Store', 'Nagar', 1);
+
+Item Table:-
+INSERT INTO Items (itemno, description, weight, cost) VALUES
+(1, 'Engine Oil', 2.5, 300),
+(2, 'Brake Pads', 1.2, 150),
+(3, 'Spark Plug', 0.1, 75);
+
+Customer Table :-
+INSERT INTO Customers (cno, cname, addr, cu_city) VALUES
+(1, 'Mr.Patil', '123 Main St', 'Nagar'),
+(2, 'Mr.Baviskar', '456 Elm St', 'Pune'),
+(3, 'Mr.Shinde', '789 Pine St', 'Nagar');
+
+Order Table:-
+INSERT INTO Orders (ono, odate, cno) VALUES
+(1, '2015-11-12', 1),
+(2, '2015-11-12', 2),
+(3, '2015-11-12', 3);
+
+Item_order Table:-
+INSERT INTO Items_Orders (ono, itemno, ordered_quantity) VALUES
+(1, 1, 10),
+(1, 2, 20),
+(2, 2, 30),
+(2, 3, 40),
+(3, 3, 50);
+
+Store_Item Table:-
+INSERT INTO Stores_Items (sid, itemno, quantity) VALUES
+(1, 1, 100),
+(1, 2, 200),
+(2, 2, 300),
+(2, 3, 400),
+(3, 1, 150),
+(3, 3, 250);
+
+                                                                           Queries
+
+1. create view a2c2v1 as select s.* from stores s, warehouses w where s.wid = w.wid and w.wname = 'Spare Parts' an
+d w.city = 'Pune';
+CREATE VIEW
+se2217=# select * from a2c2v1;
+ sid |      store_name      |    location_city     | wid
+-----+----------------------+----------------------+-----
+   2 | Electronics Store    | Pune                 |   2
+
+2.  create view a2c2v2 as select c.* from customers c, orders o where c.cno = o.cno and o.odate = '2015-11-12';
+CREATE VIEW
+se2217=# select * from a2c2v2;
+ cno |                       cname                        |    addr     |       cu_city
+-----+----------------------------------------------------+-------------+----------------------
+   1 | Mr.Patil                                           | 123 Main St | Nagar
+   2 | Mr.Baviskar                                        | 456 Elm St  | Pune
+   3 | Mr.Shinde                                          | 789 Pine St | Nagar
+
+3. create view a2c2v3 as select c.city, count(w.wid) as warehouse_count from  warehouses w,cities c where c.city
+= w.city group by c.city;
+CREATE VIEW
+se2217=# select * from a2c2v3;
+         city         | warehouse_count
+----------------------+-----------------
+ Pune                 |               1
+ Nagar                |               1
+ 

@@ -1,0 +1,112 @@
+                                                                                 ASSIGNMENT 1 SETB 2
+
+                                                                                      Creation
+
+1. create table branch(bid int primary key, brname char(30), brcity char(10));
+2. create table customer(cno int primary key, cname char(20), caddr char(35), city char(20));
+3. create table l_a(lno int primary key, l_a_require money, l_a_approved money, l_date date); 
+4. create table bcl_ternary(bid int references branch, cno int references customer, lno int references l_a);
+
+                                                                                        insertion 
+Branch Table:-
+insert into branch values(1, 'Nagar', 'Nagar'),
+(2, 'Karve Nagar','Pune'),
+(3,'ShivajiNagar','Pune'),
+(4, 'PCMC', 'Pune');
+
+Customer Table:-
+insert into customer values(101, 'Patil', 'Bharatmata chouk', 'Moshi'),
+(102, 'Kale', 'Pipe line road', 'Nagar'),(103, 'Kate', 'Pradhikaran', 'Nigdi'),
+(104, 'Shilimkar', 'Nana peth', 'Pune'),(105, 'Pandey', 'Shivaji Nagar', 'Pune'),
+(106, 'Dhere', 'Sadashiv Peth', 'Pune'),(107, 'Dhore', 'Karve Nagar', 'Pune');
+
+Loan_application Table:-
+insert into l_a values(1001, 50000, 35000, now()),(1002, 500000, 350000, now())
+,(1003, 200000, 100000, now()),(1004, 1000000, 3500000, now()),
+(1005, 300000, 120000, now()),(1006, 200000, 120000, now()),
+(1007, 70000, 30000, now());
+
+Ternary Table:-
+insert into bcl_ternary values(1, 102, 1007),(2, 107, 1006),
+(2,104,1005),(3, 105, 1004),(3, 106, 1003),
+(4, 103, 1002),(4, 101, 1001);
+
+                                                                                          Queries
+
+1.  select sum(l_a_approved) as total from l_a where lno in(select lno from bcl_ternary where bid = (select bid from branch where brname = 'Nagar'));
+   total    
+------------
+ ₹30,000.00
+
+2.  select cname from customer where cno in(select cno from bcl_ternary where bid = (select bid from branch where brname = 'Karve Nagar'));
+        cname         
+----------------------
+ Shilimkar           
+ Dhore     
+
+3.  select cname from customer c, bcl_ternary t, branch b where c.cno = t.cno and b.bid = t.bid and city = brcity;
+        cname         
+----------------------
+ Kale                
+ Dhore               
+ Shilimkar           
+ Pandey              
+ Dhere 
+
+4.  select cname from customer where cno in(select cno from bcl_ternary where lno in(select lno from l_a where l_a_approved < l_a_require));
+        cname         
+----------------------
+ Patil               
+ Kale                
+ Kate                
+ Shilimkar           
+ Dhere               
+ Dhore
+
+5. select cname, brname from customer c, branch b, l_a l, bcl_ternary t where c.cno = t.cno and b.bid = t.bid and l.lno = t.lno and extract(month from l_date) = 08;
+        cname         |             brname             
+----------------------+--------------------------------
+ Kale                 | Nagar                         
+ Dhore                | Karve Nagar                   
+ Shilimkar            | Karve Nagar                   
+ Pandey               | ShivajiNagar                  
+ Dhere                | ShivajiNagar                  
+ Kate                 | PCMC                          
+ Patil                | PCMC
+ 
+6.  select cname from customer where cno in(select cno from bcl_ternary where lno in(select lno from l_a where l_a_require::numeric::int > 100000));
+        cname         
+----------------------
+ Kate                
+ Shilimkar           
+ Pandey              
+ Dhere               
+ Dhore
+ 
+7. select max(l_a_approved) from l_a;
+      max      
+---------------
+ ₹3,500,000.00
+ 
+8.  select count(cname) from customer where cno in(select cno from bcl_ternary where bid = (select bid from branch where brname = 'ShivajiNagar'));
+ count 
+-------
+     2
+     
+9.  select cname from customer where cno in(select cno from bcl_ternary where lno in(select lno from l_a where l_a_require::numeric::int between 200000 and 400000));
+        cname         
+----------------------
+ Dhere               
+ Shilimkar           
+ Dhore
+
+10.  select brname, cname from branch b, customer c, bcl_ternary t where b.bid = t.bid and c.cno = t.cno order by brname, cname;
+             brname             |        cname         
+--------------------------------+----------------------
+ Karve Nagar                    | Dhore               
+ Karve Nagar                    | Shilimkar           
+ Nagar                          | Kale                
+ PCMC                           | Kate                
+ PCMC                           | Patil               
+ ShivajiNagar                   | Dhere               
+ ShivajiNagar                   | Pandey
